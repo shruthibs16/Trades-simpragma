@@ -11,7 +11,7 @@ app.set("port", process.env.PORT || 3000);
 var ObjectId = require('mongodb').ObjectId; 
 
 
-app.post("/trade", function(req, res) {
+app.post("/trades", function(req, res) {
   Trade.create(req.body)
     .then(function(dbProduct) {
       // If we were able to successfully create a Product, send it back to the client
@@ -33,7 +33,7 @@ app.get("/trades", async function(req,res) {
   })
 });
 
- app.get("/trade/:id",  function(req,res){
+ app.get("/trades/:id",  function(req,res){
    Trade.findOne({ _id: req.params.id })
   .populate({path:"user"})
     .then(function(dbProduct) {
@@ -51,7 +51,7 @@ app.get("/stocks/:stockSymbol/trades",function(req,res){
   let tradeType = req.query.tradeType
   let startDate = req.query.startDate
   let endDate = req.query.endDate;
-  Trade.find({symbol:stockSymbol,type:tradeType, /*timestamp: { "$gte" :startDate,"$lte" :endDate}*/})
+  Trade.find({symbol:stockSymbol,type:tradeType})/*: { "$gte" :startDate,"$lte" :endDate}*/
     .populate({path:"user"})
     .then(function(dbProduct) {
       console.log("data..",dbProduct)
@@ -74,7 +74,7 @@ app.get("/trades/users/:userID",function(req,res){
   })
 });
 
-app.delete("/trade/:id", function(req,res) {
+app.delete("/trades/:id", function(req,res) {
   Trade.deleteOne({_id: req.params.id })
   .then(function(dbProducts) {
     console.log("dbProducts...",dbProducts)
