@@ -48,11 +48,12 @@ app.get("/trades", async function(req,res) {
 
 app.get("/stocks/:stockSymbol/trades",function(req,res){
   let stockSymbol = req.params.stockSymbol;
-  let tradeType = req.query.tradeType
-  let startDate = req.query.startDate
-  let endDate = req.query.endDate;
-  Trade.find({symbol:stockSymbol,type:tradeType})/*: { "$gte" :startDate,"$lte" :endDate}*/
-    .populate({path:"user"})
+  let tradeType = req.query.type
+  let startDate = req.query.start
+  let endDate = req.query.end;
+  console.log("data...",stockSymbol,tradeType,startDate,endDate);
+  Trade.find({symbol:stockSymbol,type:tradeType,timestamp:{ "$gte" :startDate,"$lte" :endDate}})  
+  .populate({path:"user"})
     .then(function(dbProduct) {
       console.log("data..",dbProduct)
       res.json(dbProduct);
