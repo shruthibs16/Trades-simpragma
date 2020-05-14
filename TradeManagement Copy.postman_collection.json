@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "1a048df2-46d1-4b97-a3c7-ca53cf0fe787",
-		"name": "TradeManagement",
+		"_postman_id": "b0f107a1-d6ab-4378-94e3-64dd0e44271e",
+		"name": "TradeManagement Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -24,7 +24,7 @@
 			"response": []
 		},
 		{
-			"name": "GEt_Trade_by_id",
+			"name": "Get_Trade_by_tradeID",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -61,7 +61,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n   \"type\": \"sell\",\n   \"user\":\"5ebb99bfc23c4c1feb84ce53\",\n   \"symbol\": \"BC\",\n   \"shares\": 35,\n   \"price\": 192.17,\n   \"timestamp\": \"2014-06-14 13:13:13\"\n}",
+					"raw": "{\n   \"type\": \"sell\",\n   \"user\":\"5ebbacdbcaa5fe5fd98fcffa\",\n   \"symbol\": \"BC\",\n   \"shares\": 15,\n   \"price\": 132.43,\n   \"timestamp\": \"2014-08-14 13:13:13\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -82,12 +82,21 @@
 			"response": []
 		},
 		{
-			"name": "GEt_Trades_by_user_id",
+			"name": "Get_Trades_by_UserID",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": ""
+					"raw": "localhost:3000/trades/users/5ebb95bcc23c4c1feb84ce51",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"trades",
+						"users",
+						"5ebb95bcc23c4c1feb84ce51"
+					]
 				}
 			},
 			"response": []
@@ -98,7 +107,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3000/stocks/AC/trades?type=buy&start=2014-07-10T07:43:13.000Z&end=2014-08-18T07:43:13.000Z",
+					"raw": "localhost:3000/stocks/AC/trades?end=2014-08-18T07:43:13.000Z&start=2014-06-10T07:43:13.000Z&type=buy",
 					"host": [
 						"localhost"
 					],
@@ -110,16 +119,21 @@
 					],
 					"query": [
 						{
-							"key": "type",
-							"value": "buy"
-						},
-						{
-							"key": "start",
-							"value": "2014-07-10T07:43:13.000Z"
+							"key": null,
+							"value": null,
+							"disabled": true
 						},
 						{
 							"key": "end",
 							"value": "2014-08-18T07:43:13.000Z"
+						},
+						{
+							"key": "start",
+							"value": "2014-06-10T07:43:13.000Z"
+						},
+						{
+							"key": "type",
+							"value": "buy"
 						}
 					]
 				}
@@ -145,18 +159,57 @@
 			"response": []
 		},
 		{
-			"name": "Delete_trade_by_trade_id",
+			"name": "Get_trades_by_price and date",
 			"request": {
-				"method": "DELETE",
+				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:3000/trades",
+					"raw": "localhost:3000/stocks/BC/price?start=2014-06-12T07:43:13.000Z&end=2014-08-18T07:43:13.000Z",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"trades"
+						"stocks",
+						"BC",
+						"price"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "2014-06-12T07:43:13.000Z"
+						},
+						{
+							"key": "end",
+							"value": "2014-08-18T07:43:13.000Z"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create_user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\":\"shruthi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/users",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
 					]
 				}
 			},

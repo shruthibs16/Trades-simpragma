@@ -1,19 +1,17 @@
 import * as express from 'express';
-//import { loggerMiddleware } from "./logger.middleware"
 import { Trade , User } from "../src/trade"
 
 
-// Our Express APP config
+//  Express APP config
 const app = express();
 app.use(express.json());
-//app.use(loggerMiddleware);
 app.set("port", process.env.PORT || 3000);
 var ObjectId = require('mongodb').ObjectId; 
 
-//creating a new trade
+//create new user
 
-app.post("/trades", function(req, res) {
-  Trade.create(req.body)
+app.post("/users", function(req, res) {
+  User.create(req.body)
     .then(function(dbProduct) {
       // If we were able to successfully create a Product, send it back to the client
       res.status(201).json(dbProduct);
@@ -24,15 +22,30 @@ app.post("/trades", function(req, res) {
     });
 });
 
-//getting all trades
+
+//creating a new trade
+
+app.post("/trades", function(req,res) {
+  Trade.create(req.body)
+    .then(function(dbProduct) {
+      // If we were able to successfully create a Product, send it back 
+      res.status(201).json(dbProduct);
+    })
+    .catch(function(err) {
+      // If an error occurred, send it 
+      res.status(500).json(err);
+    });
+});
+
+//get all trades
 
 app.get("/trades/",  function(req,res){
-  Trade.find({})
+  Trade.find({}).sort({"_id":"asc"})
  .populate({path:"user"})
    .then(function(data) {
      console.log("data..",data)
      if(Object.keys(data).length == 0){
-      return res.status(404).json("no trades avilable ");
+      return res.status(404).json({"err":"no trades avilable "});
      }
       return res.status(200).json(data);
    })
@@ -42,7 +55,7 @@ app.get("/trades/",  function(req,res){
 });
 
 
-//getting individual trades
+//get individual trades
 
  app.get("/trades/:id",  function(req,res){
    Trade.findOne({ _id: req.params.id })
@@ -50,7 +63,7 @@ app.get("/trades/",  function(req,res){
     .then(function(dbProduct) {
       console.log("data..",dbProduct)
       if(!dbProduct){
-        return res.status(404).json("no trades avilable for given id");
+        return res.status(404).json({"err":"no trades avilable for given id"});
       }
       return res.status(200).json(dbProduct);
     })
@@ -59,7 +72,7 @@ app.get("/trades/",  function(req,res){
     });
 });
 
-//filtering the trades on symbol a,type and time
+//get the trades on symbol a,type and time
 
 app.get("/stocks/:stockSymbol/trades",function(req,res){
   let stockSymbol = req.params.stockSymbol;
@@ -68,7 +81,7 @@ app.get("/stocks/:stockSymbol/trades",function(req,res){
   let endDate = req.query.end;
   console.log("data...",stockSymbol,tradeType,startDate,endDate);
   Trade.find({symbol:stockSymbol,type:tradeType,timestamp:{ "$gte" :startDate,"$lte" :endDate}})  
-  .populate({path:"user"})
+  .populate({path:"user"}).sort({"_id":"asc"})
     .then(function(dbProduct) {
       if(Object.keys(dbProduct).length == 0){
         return res.status(404).json({"err":"no data available"});
@@ -77,20 +90,46 @@ app.get("/stocks/:stockSymbol/trades",function(req,res){
       return res.json(dbProduct);
     })
     .catch(function(err) {
-      // If an error occurred, send it to the client
+      // If an error occurred, send it 
       return res.status(500).send(err);
     });
 })
+
+//get the trades on symbol ,date and price
+
+app.get("/stocks/:stockSymbol/price",function(req,res){
+  let stockSymbol = req.params.stockSymbol;
+  let startDate = req.query.start
+  let endDate = req.query.end;
+  console.log("data...",stockSymbol,startDate,endDate);
+  Trade.find({symbol:stockSymbol,timestamp:{ "$gte" :startDate,"$lte" :endDate}})  
+  .populate({path:"user"})
+    .then(function(data:Array<any>) {
+      let array = data;
+      var min = Math.min.apply(Math, array.map(item => item.price))
+      var max = Math.max.apply(Math, array.map(item => item.price))
+      console.log("min...",min)
+      console.log("max...",max)
+      if(Object.keys(data).length == 0){
+        return res.status(404).json({"message":"There are no trades in the given date range"});
+      }
+      console.log("data..",data)
+      return res.json({"data":{stockSymbol:stockSymbol,lowest:min,highest:max}});
+    })
+    .catch(function(err) {
+      return res.status(500).send(err);
+    });
+});
 
 //getting the trades by userId
 
 app.get("/trades/users/:userID",function(req,res){
   Trade.find({user: req.params.userID })
-  .populate({path:"user"})
+  .populate({path:"user"}).sort({"_id":"asc"})
   .then(function(dbProduct) {
     console.log("dbProducts...",dbProduct)
     if(Object.keys(dbProduct).length == 0){
-      return res.status(404).json("user does not exist");
+      return res.status(404).json({"err":"user does not exist"});
    }
    return res.status(200).send(dbProduct)
   })
@@ -99,16 +138,18 @@ app.get("/trades/users/:userID",function(req,res){
   })
 });
 
+
+
 //erase one trade record by trade_id
 
 app.delete("/trades/:id", function(req,res) {
   Trade.findOneAndDelete({_id: req.params.id })
   .then(function(dbProducts) {
     if(!dbProducts){
-      return res.status(404).json("no trades availble for the id");
+      return res.status(404).json({"err":"no trades availble for the id"});
    }
     console.log("dbProducts...",dbProducts)
-    return res.status(200).send(" trade deleted successfully")
+    return res.status(200).send({"msg":" trade deleted successfully"})
   })
   .catch(function(err) {
     return res.status(500).send(err);
@@ -121,7 +162,7 @@ app.delete("/trades", function(req,res) {
   Trade.collection.remove({})
   .then(function(data) {
     console.log("dbProducts...",data)
-    return res.status(200).send(" trades deleted successfully")
+    return res.status(200).send({"msg":" trades deleted successfully"})
   })
   .catch(function(err) {
     return res.status(500).send(err);
