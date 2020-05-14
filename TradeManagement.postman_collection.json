@@ -1,0 +1,167 @@
+{
+	"info": {
+		"_postman_id": "1a048df2-46d1-4b97-a3c7-ca53cf0fe787",
+		"name": "TradeManagement",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get_All_Trades",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/trades",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"trades"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GEt_Trade_by_id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/trades/5ebbacdbcaa5fe5fd98fcffa",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"trades",
+						"5ebbacdbcaa5fe5fd98fcffa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create_Trade",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"type\": \"sell\",\n   \"user\":\"5ebb99bfc23c4c1feb84ce53\",\n   \"symbol\": \"BC\",\n   \"shares\": 35,\n   \"price\": 192.17,\n   \"timestamp\": \"2014-06-14 13:13:13\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/trades",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"trades"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GEt_Trades_by_user_id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Trade_by_(stock,tratetype and time filters)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/stocks/AC/trades?type=buy&start=2014-07-10T07:43:13.000Z&end=2014-08-18T07:43:13.000Z",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"stocks",
+						"AC",
+						"trades"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "buy"
+						},
+						{
+							"key": "start",
+							"value": "2014-07-10T07:43:13.000Z"
+						},
+						{
+							"key": "end",
+							"value": "2014-08-18T07:43:13.000Z"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete_all_trades",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/trades",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"trades"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete_trade_by_trade_id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/trades",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"trades"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -10,41 +10,56 @@ app.use(express.json());
 app.set("port", process.env.PORT || 3000);
 var ObjectId = require('mongodb').ObjectId; 
 
+//creating a new trade
 
 app.post("/trades", function(req, res) {
   Trade.create(req.body)
     .then(function(dbProduct) {
       // If we were able to successfully create a Product, send it back to the client
-      res.json(dbProduct);
+      res.status(201).json(dbProduct);
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
-      res.json(err);
+      res.status(500).json(err);
     });
 });
 
-app.get("/trades", async function(req,res) {
-  await Trade.find({}).sort({_id: 'asc'}).populate({path:"user"})
-  .then(function(dbProducts) {
-    res.json(dbProducts);
-  })
-  .catch(function(err) {
-    res.json(err);
-  })
+//getting all trades
+
+app.get("/trades/",  function(req,res){
+  Trade.find({})
+ .populate({path:"user"})
+   .then(function(data) {
+     console.log("data..",data)
+     if(Object.keys(data).length == 0){
+      return res.status(404).json("no trades avilable ");
+     }
+      return res.status(200).json(data);
+   })
+   .catch(function(err) {
+     return res.status(500).send(err);
+   });
 });
+
+
+//getting individual trades
 
  app.get("/trades/:id",  function(req,res){
    Trade.findOne({ _id: req.params.id })
   .populate({path:"user"})
     .then(function(dbProduct) {
       console.log("data..",dbProduct)
-      res.status(200).json(dbProduct);
+      if(!dbProduct){
+        return res.status(404).json("no trades avilable for given id");
+      }
+      return res.status(200).json(dbProduct);
     })
     .catch(function(err) {
-      // If an error occurred, send it to the client
-      res.status(400).send(err);
+      return res.status(500).send(err);
     });
 });
+
+//filtering the trades on symbol a,type and time
 
 app.get("/stocks/:stockSymbol/trades",function(req,res){
   let stockSymbol = req.params.stockSymbol;
@@ -55,34 +70,61 @@ app.get("/stocks/:stockSymbol/trades",function(req,res){
   Trade.find({symbol:stockSymbol,type:tradeType,timestamp:{ "$gte" :startDate,"$lte" :endDate}})  
   .populate({path:"user"})
     .then(function(dbProduct) {
+      if(Object.keys(dbProduct).length == 0){
+        return res.status(404).json({"err":"no data available"});
+      }
       console.log("data..",dbProduct)
-      res.json(dbProduct);
+      return res.json(dbProduct);
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
-      res.status(400).send(err);
+      return res.status(500).send(err);
     });
 })
 
+//getting the trades by userId
+
 app.get("/trades/users/:userID",function(req,res){
   Trade.find({user: req.params.userID })
-  .then(function(dbProducts) {
-    console.log("dbProducts...",dbProducts)
-    res.status(200).send(dbProducts)
+  .populate({path:"user"})
+  .then(function(dbProduct) {
+    console.log("dbProducts...",dbProduct)
+    if(Object.keys(dbProduct).length == 0){
+      return res.status(404).json("user does not exist");
+   }
+   return res.status(200).send(dbProduct)
   })
   .catch(function(err) {
-    res.status(404).send("user not found....");
+    return res.status(500).send(err);
   })
 });
 
+//erase one trade record by trade_id
+
 app.delete("/trades/:id", function(req,res) {
-  Trade.deleteOne({_id: req.params.id })
+  Trade.findOneAndDelete({_id: req.params.id })
   .then(function(dbProducts) {
+    if(!dbProducts){
+      return res.status(404).json("no trades availble for the id");
+   }
     console.log("dbProducts...",dbProducts)
-    res.status(200).send(" trade deleted successfully")
+    return res.status(200).send(" trade deleted successfully")
   })
   .catch(function(err) {
-    res.status(404).send("id not found");
+    return res.status(500).send(err);
+  })
+});
+
+//erase all trades
+
+app.delete("/trades", function(req,res) {
+  Trade.collection.remove({})
+  .then(function(data) {
+    console.log("dbProducts...",data)
+    return res.status(200).send(" trades deleted successfully")
+  })
+  .catch(function(err) {
+    return res.status(500).send(err);
   })
 });
 
